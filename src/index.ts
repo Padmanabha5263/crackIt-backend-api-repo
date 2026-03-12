@@ -2,17 +2,24 @@ import express from "express";
 import connectDB from "./config/databaseconfig.ts";
 import authRoutes from './routes/auth.routes.ts'
 import session from "express-session";
-import { MONGODB_URI, SESSION_SECRET_KEY } from "./util/constants.ts";
 import MongoDBStoreConstructor from "connect-mongodb-session";
+import dotenv from "dotenv";
 
+// load environment variable from the .env file
+dotenv.config();
+
+// this is required to create a session store that will store session data in the mongodb database
 const MongoDBStore = MongoDBStoreConstructor(session);
 
 
 const app = express();
 const PORT = 3000;
 
+// configure session store
 const mongodbStore = new MongoDBStore({
-  uri: MONGODB_URI,
+  uri: process.env.MONGODB_URI??(() => {
+    throw new Error("MONGODB_URI is not defined");
+  })(),
   collection: "session",
 })
 
@@ -21,7 +28,9 @@ await connectDB()
 
 app.use(express.json());
 app.use(session({
-  secret: SESSION_SECRET_KEY,
+  secret: process.env.SESSION_SECRET_KEY??(() => {
+    throw new Error("SESSION_SECRET_KEY is not defined");
+  })(),
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false }, // Set to true if using HTTPS

@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
-import { MONGODB_URI } from "../util/constants.ts";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(MONGODB_URI);
-
-    console.log("MongoDB connected");
-  } catch (error) {
-    console.error("DB connection error:", error);
+    const mongodburi = process.env.MONGODB_URI??(() => {
+      throw new Error("MONGODB_URI is not defined");
+    })();
+    await mongoose.connect(mongodburi);
+  } 
+  catch (error) {
     process.exit(1);
   }
 };
