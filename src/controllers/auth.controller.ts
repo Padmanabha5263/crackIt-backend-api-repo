@@ -4,6 +4,40 @@ import { AuthService } from "../services/auth.service.ts";
 
 const authService = new AuthService();
 
+// reset password service using email
+export const sendResetPasswordLinkEmail = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    const result = await authService.sendPasswordResetEmail(email);
+    res.json({
+      message: "Password reset email sent successfully",
+      data: result
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({
+      message: "Password reset failed",
+      error: errorMessage
+    });
+  }
+}
+export const ResetPasswordController = async (req: Request, res: Response) => {
+  try {
+    const { email, new_password, token } = req.body;
+    const result = await authService.resetAccountPassword(email, new_password, token);
+    res.json({
+      message: "Password updated successfully",
+      data: result
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({
+      message: "Password reset failed",
+      error: errorMessage
+    });
+  }
+}
+
 export const createUser = async (req: Request, res: Response) => {
   try {
 
@@ -38,7 +72,6 @@ export const loginUser = async (req: Request, res: Response) => {
     const { email, password } = req.body; 
     const user = await authService.authenticateUser(email, password);
     if(user){
-      console.log("User authenticated successfully");
       req.session.isLoggedIn = true;
       req.session.user = {
         id: user.id,
