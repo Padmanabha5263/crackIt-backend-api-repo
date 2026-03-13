@@ -1,11 +1,11 @@
-import { User } from "../models/user.model.ts";
+import { User } from "../models/user.model";
 import bcrypt from "bcrypt";
-import type {UserItem} from "../types/user.types.ts";
-import { generateResetToken } from "../util/cryptoutils.ts";
-import { EmailTemplates } from "../models/email.model.ts";
-import { replacePlaceholders } from "../util/email.ts";
-import {generateHashValueforString} from "../util/cryptoutils.ts";
-import { EmailService } from "./email.service.ts";
+import type {UserItem} from "../types/user.types";
+import { generateResetToken } from "../util/cryptoutils";
+import { EmailTemplates } from "../models/email.model";
+import { replacePlaceholders } from "../util/email";
+import {generateHashValueforString} from "../util/cryptoutils";
+import { EmailService } from "./email.service";
 
 
 export class AuthService {

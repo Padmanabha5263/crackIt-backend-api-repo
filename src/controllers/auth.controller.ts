@@ -1,6 +1,6 @@
 import type { Request } from "express";
 import type { Response } from "express";
-import { AuthService } from "../services/auth.service.ts";
+import { AuthService } from "../services/auth.service";
 
 const authService = new AuthService();
 

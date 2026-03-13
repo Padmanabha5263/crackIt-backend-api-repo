@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser, loginUser, ResetPasswordController, sendResetPasswordLinkEmail } from "../controllers/auth.controller.ts";
+import { createUser, loginUser, ResetPasswordController, sendResetPasswordLinkEmail } from "../controllers/auth.controller";
 // import { isAuth } from "../middlewares/isauth.middleware.ts";
 
 const router = Router();

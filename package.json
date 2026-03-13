@@ -1,7 +1,7 @@
 {
-  "name": "projects",
+  "name": "crackit-backend-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Authentication API for CrackIt interview preparation platform",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,10 +9,10 @@
     "build": "tsc",
     "start": "node dist/index.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["authentication", "api", "express", "typescript", "mongodb", "interview-prep"],
+  "author": "CrackIt Team",
   "license": "ISC",
-  "type": "module",
+  "type": "commonjs",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "connect-mongodb-session": "^5.0.0",

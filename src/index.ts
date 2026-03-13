@@ -1,6 +1,6 @@
 import express from "express";
-import connectDB from "./config/databaseconfig.ts";
-import authRoutes from './routes/auth.routes.ts'
+import connectDB from "./config/databaseconfig";
+import authRoutes from './routes/auth.routes'
 import session from "express-session";
 import MongoDBStoreConstructor from "connect-mongodb-session";
 import dotenv from "dotenv";
@@ -24,7 +24,7 @@ const mongodbStore = new MongoDBStore({
 })
 
 // connect to the mongodb database
-await connectDB()
+connectDB()
 
 app.use(express.json());
 app.use(session({
