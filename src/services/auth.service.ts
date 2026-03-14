@@ -88,16 +88,15 @@ export class AuthService {
       const hashedPassword = await generateHashValueforString(data.password);
       const user = new User({
         name: data.name,
-        age: data.age,
+        dob: data.dob,
         email: data.email,
-        phone: data.phone,
         password: hashedPassword,
         usertype: data.usertype
       });
       return await user.save();
     } 
     catch (error) {
-      throw new Error("Error occurred while authenticating user");
+      throw error
     }
   }
 

@@ -1,6 +1,8 @@
 import type { Request } from "express";
 import type { Response } from "express";
 import { AuthService } from "../services/auth.service";
+import { UserRoles } from "../types/user.types";
+import type { UserItem } from "../types/user.types";
 
 const authService = new AuthService();
 
@@ -40,17 +42,15 @@ export const ResetPasswordController = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
   try {
-
-    const { name, age, email, phone, password, usertype } = req.body;
+    const usertype:UserRoles = "student"
+    const {dob, email, password } = req.body;
 
     const user = await authService.createUser({
-      name,
-      age,
+      dob,
       email,
-      phone,
       password,
       usertype
-    });
+    } as UserItem);
 
     res.status(201).json({
       message: "User created successfully",
@@ -59,9 +59,10 @@ export const createUser = async (req: Request, res: Response) => {
 
   } catch (error) {
 
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     res.status(500).json({
       message: "Error creating user",
-      error
+      error:errorMessage
     });
 
   }

@@ -3,10 +3,14 @@
 // user item for storing the user item in the database
 export type UserItem={
     id?: string,
-    name: string,
-    age: number,
+    name?: string,
+    dob: Date,
     email: string,
-    phone: string,
+    phone?: string,
     password: string,
-    usertype:string
+    usertype:UserRoles
 }
+
+// type for the user roles 
+export type UserRoles
+= "student" | "admin"
