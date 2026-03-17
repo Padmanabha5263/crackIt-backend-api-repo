@@ -1,14 +1,27 @@
 // middle ware to check all the request is authenticated or not
-import type{ Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from "express";
+import { AppError } from "../util/AppError";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 export const isAuth = (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.session.isLoggedIn) {
-    return res.status(401).json({ error: 'User is not authenticated' });
-  }
-  next();
+    const authHeader: string = req.get("Authorization");
+    const token: string = authHeader.split(" ")[1];
+    if (!token) {
+      throw new AppError("Token not provided", 401);
+    }
+
+    const decodeToken = jwt.verify(
+      token,
+      process.env.JWT_SECRET_KEY,
+    ) as JwtPayload;
+    if (!decodeToken) {
+      throw new AppError("Invalid token", 401);
+    }
+   (req as any).user = decodeToken;
+    next();
   } 
   catch (error) {
-    return res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown middleware error' });
+    next(error);
   }
 };

@@ -1,26 +1,22 @@
-import type { Request } from "express";
-import type { Response } from "express";
+import type { NextFunction, Request,Response } from "express";
 import { AuthService } from "../services/auth.service";
-import { UserRoles } from "../types/user.types";
-import type { UserItem } from "../types/user.types";
+import { UserRoles } from "../types/common.types";
+import type { UserItem } from "../types/common.types";
+import { AppError } from "../util/AppError";
+import jwt from 'jsonwebtoken'
 
 const authService = new AuthService();
 
 // reset password service using email
-export const sendResetPasswordLinkEmail = async (req: Request, res: Response) => {
+export const sendResetPasswordLinkEmail = async (req: Request, res: Response, next:NextFunction) => {
   try {
-    const { email } = req.body;
-    const result = await authService.sendPasswordResetEmail(email);
+    const { email }:{email:string} = req.body;
+    await authService.sendPasswordResetEmail(email);
     res.json({
       message: "Password reset email sent successfully",
-      data: result
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({
-      message: "Password reset failed",
-      error: errorMessage
-    });
+    next(error)
   }
 }
 export const ResetPasswordController = async (req: Request, res: Response) => {
@@ -40,10 +36,10 @@ export const ResetPasswordController = async (req: Request, res: Response) => {
   }
 }
 
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (req: Request, res: Response, next:NextFunction) => {
   try {
     const usertype:UserRoles = "student"
-    const {dob, email, password } = req.body;
+    const {dob, email, password }:{dob:Date; email:string; password:string} = req.body;
 
     const user = await authService.createUser({
       dob,
@@ -52,46 +48,36 @@ export const createUser = async (req: Request, res: Response) => {
       usertype
     } as UserItem);
 
+    if(!user){
+     throw new AppError("Error creating user", 500)
+    }
+
     res.status(201).json({
       message: "User created successfully",
-      data: user
+      data: {userId: user._id,email:user.email}
     });
 
-  } catch (error) {
-
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({
-      message: "Error creating user",
-      error:errorMessage
-    });
-
+  } 
+  catch (error) {
+    next(error)
   }
 };
 
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password } = req.body; 
+    const { email, password }: {email:string; password:string} = req.body; 
     const user = await authService.authenticateUser(email, password);
-    if(user){
-      req.session.isLoggedIn = true;
-      req.session.user = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        usertype: user.usertype
-      };
+    if(!user){
+      throw new AppError("User not found", 404)
     }
-
-    res.json({
+    const token:string = jwt.sign({ id: user._id, email: user.email, group: user.usertype }, process.env.JWT_SECRET_KEY as string, { expiresIn: '1h' })
+    
+    res.status(200).json({
       message: "Login successful",
-      data: user
+      data: {user, token}
     });
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    res.status(401).json({
-      data: null,
-      message: "Login failed",
-      error: errorMessage
-    });
+  } 
+  catch (error) {
+    next(error);
   }
 };

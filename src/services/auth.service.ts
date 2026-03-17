@@ -1,14 +1,18 @@
 import { User } from "../models/user.model";
 import bcrypt from "bcrypt";
-import type {UserItem} from "../types/user.types";
+import type {UserItem} from "../types/common.types";
 import { generateResetToken } from "../util/cryptoutils";
 import { EmailTemplates } from "../models/email.model";
 import { replacePlaceholders } from "../util/email";
 import {generateHashValueforString} from "../util/cryptoutils";
 import { EmailService } from "./email.service";
+import { AppError } from "../util/AppError";
+import jwt from "jsonwebtoken";
 
 
 export class AuthService {
+  base_url:string = process.env.BASE_APPLICATION_URL;
+
   constructor() {
      console.log('AuthService initialized');
   }
@@ -18,7 +22,7 @@ export class AuthService {
     try {
       const user = await User.findOne({ email: email });
       if (!user) {
-        throw new Error("User not found");
+        throw new AppError("User not found",404);
       }
 
       const [tokenResult, templateResult] = await Promise.allSettled([
@@ -27,11 +31,11 @@ export class AuthService {
       ]);
 
       if (tokenResult.status === "rejected") {
-        throw new Error("Failed to generate reset token");
+        throw new AppError("Failed to generate reset token",500);
       }
 
       if (templateResult.status === "rejected" || !templateResult.value?.is_active) {
-        throw new Error("Failed to fetch or email template is inactive");
+        throw new AppError("Failed to fetch or email template is inactive",500);
       }
 
       const token = tokenResult.value;
@@ -105,22 +109,17 @@ export class AuthService {
     try {
       const user = await User.findOne({ email: email });
       if (!user) {
-        throw new Error("User not found");
+        throw new AppError("User not found", 404)
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
-
       if (!isMatch) {
-        throw new Error("Invalid password");
+        throw new AppError("Invalid password",401);
       }
-
       return user;
     } 
     catch (error) {
       throw error
     }
-  }
-
-
-    
+  }   
 }

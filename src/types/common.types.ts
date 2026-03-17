@@ -14,3 +14,7 @@ export type UserItem={
 // type for the user roles 
 export type UserRoles
 = "student" | "admin"
+
+export type UserAuth = {
+    
+}
