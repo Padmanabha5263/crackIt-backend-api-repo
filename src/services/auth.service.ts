@@ -63,18 +63,15 @@ export class AuthService {
 
   resetAccountPassword = async (email: string, newPassword: string, token: string) => {
     try {
-      if (!newPassword) {
-        throw new Error("New password is required");
-      }
       const user = await User.findOne({ email: email });
       if (!user) {
-        throw new Error("User not found");
+        throw new AppError("User not found",404);
       }
       if(user.passwordResetTokenExpiry && user.passwordResetTokenExpiry < new Date()) {
-        throw new Error("Reset token has expired");
+        throw new AppError("Reset token has expired", 406);
       }
       if(!user.passwordResetToken || user.passwordResetToken !== token) {
-        throw new Error("Invalid reset token");
+        throw new AppError("Invalid reset token", 422);
       }
       const hashedPassword = await generateHashValueforString(newPassword);
       user.password = hashedPassword.toString();

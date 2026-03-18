@@ -19,7 +19,7 @@ export const sendResetPasswordLinkEmail = async (req: Request, res: Response, ne
     next(error)
   }
 }
-export const ResetPasswordController = async (req: Request, res: Response) => {
+export const ResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, new_password, token } = req.body;
     const result = await authService.resetAccountPassword(email, new_password, token);
@@ -28,11 +28,7 @@ export const ResetPasswordController = async (req: Request, res: Response) => {
       data: result
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({
-      message: "Password reset failed",
-      error: errorMessage
-    });
+    next(error)
   }
 }
 
