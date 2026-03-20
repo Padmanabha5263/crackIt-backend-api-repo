@@ -21,11 +21,11 @@ export const sendResetPasswordLinkEmail = async (req: Request, res: Response, ne
 }
 export const ResetPasswordController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, new_password, token } = req.body;
+    const { email, new_password, token }:{email:string; new_password:string, token:string} = req.body;
     const result = await authService.resetAccountPassword(email, new_password, token);
     res.json({
       message: "Password updated successfully",
-      data: result
+      data: {id:result._id, email:result.email}
     });
   } catch (error) {
     next(error)
@@ -66,11 +66,11 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
     if(!user){
       throw new AppError("User not found", 404)
     }
-    const token:string = jwt.sign({ id: user._id, email: user.email, group: user.usertype }, process.env.JWT_SECRET_KEY as string, { expiresIn: '1h' })
+    const token:string = jwt.sign({ id: user._id, email: user.email, group: user.user_type }, process.env.JWT_SECRET_KEY as string, { expiresIn: '1h' })
     
     res.status(200).json({
       message: "Login successful",
-      data: {user, token}
+      data: {token, id:user._id, group:user.user_type, email:user.email}
     });
   } 
   catch (error) {

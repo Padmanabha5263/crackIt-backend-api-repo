@@ -12,7 +12,12 @@ connectDB().then(() => console.log("Connected to MongoDB"))
 const app = express();
 const PORT: number = parseInt(process.env.EXPRESS_SERVER_PORT) || 3000;
 
-
+app.use((req, res, next)=>{
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PATCH, PUT");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next()
+})
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 

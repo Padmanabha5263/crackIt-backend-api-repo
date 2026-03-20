@@ -17,16 +17,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    usertype: {
+    user_type: {
       type: String,
       enum: ["admin", "student"],
       default: "student"
     },
-    passwordResetToken: {
+    password_reset_token: {
       type: String,
       default: null
     },
-    passwordResetTokenExpiry:{
+    password_reset_token_expiry:{
       type: Date,
       default: null
     }

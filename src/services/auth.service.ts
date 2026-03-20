@@ -41,8 +41,8 @@ export class AuthService {
       const token = tokenResult.value;
       const template = templateResult.value;
 
-      user.passwordResetToken = token;
-      user.passwordResetTokenExpiry = new Date(Date.now() + 3600000);
+      user.password_reset_token = token;
+      user.password_reset_token_expiry = new Date(Date.now() + 3600000);
       await user.save();
 
       const resetLink = `${process.env.BASE_APPLICATION_URL}/resetpassword?token=${token}`;
@@ -67,10 +67,10 @@ export class AuthService {
       if (!user) {
         throw new AppError("User not found",404);
       }
-      if(user.passwordResetTokenExpiry && user.passwordResetTokenExpiry < new Date()) {
+      if(user.password_reset_token_expiry && user.password_reset_token_expiry < new Date()) {
         throw new AppError("Reset token has expired", 406);
       }
-      if(!user.passwordResetToken || user.passwordResetToken !== token) {
+      if(!user.password_reset_token || user.password_reset_token !== token) {
         throw new AppError("Invalid reset token", 422);
       }
       const hashedPassword = await generateHashValueforString(newPassword);
